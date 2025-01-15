@@ -1,8 +1,8 @@
 # PhysMLE
-Official code of IEEE TPAMI "PhysMLE: Generalizable and Priors-Inclusive Multi-task Remote Physiological Measurement"
+Official code of "PhysMLE: Generalizable and Priors-Inclusive Multi-task Remote Physiological Measurement"
 
 ## Data Prepare
-You can refer to https://github.com/EnVision-Research/NEST-rPPG to obtain the processed STMaps.
+You can refer to [https://github.com/EnVision-Research/NEST-rPPG](https://github.com/WJULYW/HSRD).
 Before that, please get the permission to use the following datasets first:
 [**VIPL**](http://vipl.ict.ac.cn/en/resources/databases/201901/t20190104_34800.html),
 [**V4V**](https://competitions.codalab.org/competitions/31978),
@@ -24,13 +24,32 @@ Then, you can try to train it with the following command:
 ```
 python train.py -g $GPU id$ -t 'the target dataset you want to test on' -alpha 'lora alpha' -r 'lora gamma' -k 'number of experts'
 ```
-## Citation
+## Please cite following works
 ```
+@article{wang2024physmle,
+  title={PhysMLE: Generalizable and Priors-Inclusive Multi-task Remote Physiological Measurement},
+  author={Wang, Jiyao and Lu, Hao and Wang, Ange and Yang, Xiao and Chen, Yingcong and He, Dengbo and Wu, Kaishun},
+  journal={arXiv preprint arXiv:2405.06201},
+  year={2024}
+}
+
+@ARTICLE{10371379,
+  author={Wang, Jiyao and Lu, Hao and Wang, Ange and Chen, Yingcong and He, Dengbo},
+  journal={IEEE Journal of Biomedical and Health Informatics}, 
+  title={Hierarchical Style-Aware Domain Generalization for Remote Physiological Measurement}, 
+  year={2024},
+  volume={28},
+  number={3},
+  pages={1635-1643},
+  keywords={Feature extraction;Videos;Skin;Physiology;Biomedical measurement;Bioinformatics;Training;Adversarial learning;contrastive learning;domain generalization;heart rate estimation;remote photoplethysmography (rPPG)},
+  doi={10.1109/JBHI.2023.3346057}}
+
 @ARTICLE{dg2024wang,
   author={Wang, Jiyao and Lu, Hao and Han, Hu and Chen, Yingcong and He, Dengbo and Wu, Kaishun},
   journal={IEEE Transactions on Instrumentation and Measurement}, 
   title={Generalizable Remote Physiological Measurement via Semantic-Sheltered Alignment and Plausible Style Randomization}, 
   year={2024}
 }
+
 
 ```
