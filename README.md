@@ -1,6 +1,11 @@
 # PhysMLE
 Official code of "PhysMLE: Generalizable and Priors-Inclusive Multi-task Remote Physiological Measurement"
 
+<div style="text-align:center;">
+  <img src="framework.png" style="width:100%;" />
+</div>
+
+
 ## Data Prepare
 You can refer to [https://github.com/EnVision-Research/NEST-rPPG](https://github.com/WJULYW/HSRD).
 Before that, please get the permission to use the following datasets first:
