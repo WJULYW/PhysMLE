@@ -1,5 +1,5 @@
 # PhysMLE
-Official code of "PhysMLE: Generalizable and Priors-Inclusive Multi-task Remote Physiological Measurement"
+Official code of TPAMI2025 "PhysMLE: Generalizable and Priors-Inclusive Multi-task Remote Physiological Measurement"
 
 <div style="text-align:center;">
   <img src="framework.png" style="width:100%;" />
@@ -32,11 +32,12 @@ python train.py -g $GPU id$ -t 'the target dataset you want to test on' -alpha '
 ```
 ## Please cite following works
 ```
-@article{wang2024physmle,
-  title={PhysMLE: Generalizable and Priors-Inclusive Multi-task Remote Physiological Measurement},
+@article{wang2025physmle,
+  title={Physmle: Generalizable and priors-inclusive multi-task remote physiological measurement},
   author={Wang, Jiyao and Lu, Hao and Wang, Ange and Yang, Xiao and Chen, Yingcong and He, Dengbo and Wu, Kaishun},
-  journal={arXiv preprint arXiv:2405.06201},
-  year={2024}
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  year={2025},
+  publisher={IEEE}
 }
 
 @ARTICLE{10371379,
