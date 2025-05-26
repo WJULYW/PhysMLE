@@ -7,7 +7,7 @@ Official code of TPAMI2025 "PhysMLE: Generalizable and Priors-Inclusive Multi-ta
 
 
 ## Data Prepare
-You can refer to [https://github.com/EnVision-Research/NEST-rPPG](https://github.com/WJULYW/HSRD).
+You can refer to [https://github.com/EnVision-Research/NEST-rPPG](https://github.com/WJULYW/HSRD) for STMap preprocessing.
 Before that, please get the permission to use the following datasets first:
 [**VIPL**](http://vipl.ict.ac.cn/en/resources/databases/201901/t20190104_34800.html),
 [**V4V**](https://competitions.codalab.org/competitions/31978),
@@ -19,7 +19,7 @@ Before that, please get the permission to use the following datasets first:
 After getting STMaps, you can create a new './STMap' folder and put them into it.
 
 ## Pre-trained Model
-In this work, we utilized ResNet18[link](https://download.pytorch.org/models/resnet18-5c106cde.pth) and ViT[link](https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-vitjx/jx_vit_base_p16_224-80ecf9dd.pth) as the backbone network.
+In this work, we utilized [ResNet18](https://download.pytorch.org/models/resnet18-5c106cde.pth) and [ViT](https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-vitjx/jx_vit_base_p16_224-80ecf9dd.pth) as the backbone network.
 You can download them, create a new folder './pre_encoder' and put the pth file into it.
 For the first time running, please adjust the hyperparameter 'reData' to 1, to generate the STMap index.
 
