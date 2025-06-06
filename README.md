@@ -32,13 +32,17 @@ python train.py -g $GPU id$ -t 'the target dataset you want to test on' -alpha '
 ```
 ## Please cite following works
 ```
-@article{wang2025physmle,
-  title={Physmle: Generalizable and priors-inclusive multi-task remote physiological measurement},
+@ARTICLE{10903997,
   author={Wang, Jiyao and Lu, Hao and Wang, Ange and Yang, Xiao and Chen, Yingcong and He, Dengbo and Wu, Kaishun},
-  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence}, 
+  title={PhysMLE: Generalizable and Priors-Inclusive Multi-Task Remote Physiological Measurement}, 
   year={2025},
-  publisher={IEEE}
-}
+  volume={47},
+  number={6},
+  pages={4908-4925},
+  keywords={Multitasking;Biomedical monitoring;Training;Semantics;Blood;Skin;Faces;Videos;Physiology;Heart rate variability;rPPG;multi-task learning;mixture of experts;low-rank adaptation;domain generalization},
+  doi={10.1109/TPAMI.2025.3545598}}
+
 
 @ARTICLE{10371379,
   author={Wang, Jiyao and Lu, Hao and Wang, Ange and Chen, Yingcong and He, Dengbo},
@@ -51,12 +55,17 @@ python train.py -g $GPU id$ -t 'the target dataset you want to test on' -alpha '
   keywords={Feature extraction;Videos;Skin;Physiology;Biomedical measurement;Bioinformatics;Training;Adversarial learning;contrastive learning;domain generalization;heart rate estimation;remote photoplethysmography (rPPG)},
   doi={10.1109/JBHI.2023.3346057}}
 
-@ARTICLE{dg2024wang,
+@ARTICLE{10752618,
   author={Wang, Jiyao and Lu, Hao and Han, Hu and Chen, Yingcong and He, Dengbo and Wu, Kaishun},
   journal={IEEE Transactions on Instrumentation and Measurement}, 
   title={Generalizable Remote Physiological Measurement via Semantic-Sheltered Alignment and Plausible Style Randomization}, 
-  year={2024}
-}
+  year={2025},
+  volume={74},
+  number={},
+  pages={1-14},
+  keywords={Heart rate;Uncertainty;Volume measurement;Semantics;Estimation;Photoplethysmography;Feature extraction;Skin;Robustness;Biomedical monitoring;Domain generalization (DG);heart rate (HR) estimation;invariant risk minimization (IRM);plausible style generation;remote photoplethysmography (rPPG)},
+  doi={10.1109/TIM.2024.3497058}}
+
 
 
 ```
