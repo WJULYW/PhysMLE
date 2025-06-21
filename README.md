@@ -15,7 +15,8 @@ Before that, please get the permission to use the following datasets first:
 [**UBFC**](https://sites.google.com/view/ybenezeth/ubfcrppg), 
 [**PURE**](https://www.tu-ilmenau.de/en/university/departments/department-of-computer-science-and-automation/profile/institutes-and-groups/institute-of-computer-and-systems-engineering/group-for-neuroinformatics-and-cognitive-robotics/data-sets-code/pulse-rate-detection-dataset-pure),
 
-[**HCW**] If you want to use this dataset, please send an email to jwang297@connect.hkust-gz.edu.cn with the Title of 'HCW Access Request - your institution' and a brief statement about your usage purpose.
+[**HCW**] Please scan and dispatch the completed agreement via your institutional email to jwanggo@connect.ust.hk. The email should have the subject line: “HCW Access Request - your institution.” In the email, outline your institution’s past research and articulate the rationale for seeking access to the HCW, including its intended application in your specific research project.
+
 After getting STMaps, you can create a new './STMap' folder and put them into it.
 
 ## Pre-trained Model
