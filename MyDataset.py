@@ -15,6 +15,11 @@ from utils import rr_cal
 import random
 import utils
 import biosppy.signals as signals
+from functools import lru_cache
+
+@lru_cache(maxsize=4096)
+def loadmat_cached(path, key):
+    return scio.loadmat(path)[key]
 
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])
@@ -33,6 +38,12 @@ class Data_DG(Dataset):
         self.transform = transform
         self.args = args
         self.jump = jump
+
+        # Cache index metadata to avoid per-item .mat file I/O during training
+        self.index_cache = []
+        for f in self.datalist:
+            temp = scio.loadmat(os.path.join(self.root_dir, f))
+            self.index_cache.append((str(temp['Path'][0]), int(temp['Step_Index'])))
 
         self.transform = transforms.Compose([transforms.Resize(size=(64, 256)),
                                              transforms.ToTensor(),
@@ -60,7 +71,7 @@ class Data_DG(Dataset):
         if self.dataName == 'COH':
             bvp_name = 'Label/BVP.mat'
             bvp_path = os.path.join(nowPath, bvp_name)
-            bvp = scio.loadmat(bvp_path)['BVP']
+            bvp = loadmat_cached(bvp_path, 'BVP')
             bvp = np.array(bvp.astype('float32')).reshape(-1)
             bvp = bvp[Step_Index:Step_Index + self.frames_num]
             bvp = (bvp - np.min(bvp)) / (np.max(bvp) - np.min(bvp))
@@ -79,7 +90,7 @@ class Data_DG(Dataset):
 
             gt_name = 'Label/HR_256.mat'
             gt_path = os.path.join(nowPath, gt_name)
-            gt = scio.loadmat(gt_path)['HR']
+            gt = loadmat_cached(gt_path, 'HR')
             gt = np.array(gt.astype('float32')).reshape(-1)
             gt = gt[int(Step_Index / 10)]
             gt = gt.astype('float32')
@@ -87,7 +98,7 @@ class Data_DG(Dataset):
         elif self.dataName == 'VIPL':
             bvp_name = 'Label_CSI/BVP_Filt.mat'
             bvp_path = os.path.join(nowPath, bvp_name)
-            bvp = scio.loadmat(bvp_path)['BVP']
+            bvp = loadmat_cached(bvp_path, 'BVP')
             bvp = np.array(bvp.astype('float32')).reshape(-1)
             bvp = bvp[Step_Index:Step_Index + self.frames_num]
             bvp = (bvp - np.min(bvp)) / (np.max(bvp) - np.min(bvp))
@@ -95,14 +106,14 @@ class Data_DG(Dataset):
 
             gt_name = 'Label_CSI/HR.mat'
             gt_path = os.path.join(nowPath, gt_name)
-            gt = scio.loadmat(gt_path)['HR']
+            gt = loadmat_cached(gt_path, 'HR')
             gt = np.array(gt.astype('float32')).reshape(-1)
             gt = np.nanmean(gt[Step_Index:Step_Index + self.frames_num])
             gt = gt.astype('float32')
 
             sp_name = 'Label_CSI/SPO2.mat'
             sp_path = os.path.join(nowPath, sp_name)
-            sp = scio.loadmat(sp_path)['SPO2']
+            sp = loadmat_cached(sp_path, 'SPO2')
             sp = np.array(sp.astype('float32')).reshape(-1)
             sp = np.nanmean(sp[Step_Index:Step_Index + self.frames_num])
             sp = sp.astype('float32')
@@ -112,7 +123,7 @@ class Data_DG(Dataset):
         elif self.dataName == 'V4V':
             gt_name = 'Label/HR.mat'
             gt_path = os.path.join(nowPath, gt_name)
-            gt = scio.loadmat(gt_path)['HR']
+            gt = loadmat_cached(gt_path, 'HR')
             gt = np.array(gt.astype('float32')).reshape(-1)
             gt = np.nanmean(gt[Step_Index:Step_Index + self.frames_num])
             gt = gt.astype('float32')
@@ -121,7 +132,7 @@ class Data_DG(Dataset):
 
             rf_name = 'Label/RF.mat'
             rf_path = os.path.join(nowPath, rf_name)
-            rf = scio.loadmat(rf_path)['RF']
+            rf = loadmat_cached(rf_path, 'RF')
             rf = np.array(rf.astype('float32')).reshape(-1)
             rf = np.nanmean(rf[Step_Index:Step_Index + self.frames_num])
             rf = rf.astype('float32')
@@ -131,7 +142,7 @@ class Data_DG(Dataset):
         elif self.dataName == 'HCW':
             bvp_name = 'Label/BVP_Filt.mat'
             bvp_path = os.path.join(nowPath, bvp_name)
-            bvp = scio.loadmat(bvp_path)['BVP']
+            bvp = loadmat_cached(bvp_path, 'BVP')
             bvp = np.array(bvp.astype('float32')).reshape(-1)
             bvp = bvp[Step_Index:Step_Index + self.frames_num]
             bvp = (bvp - np.min(bvp)) / (np.max(bvp) - np.min(bvp))
@@ -140,7 +151,7 @@ class Data_DG(Dataset):
             '''
             gt_name = 'Label/HR.mat'
             gt_path = os.path.join(nowPath, gt_name)
-            gt = scio.loadmat(gt_path)['HR']
+            gt = loadmat_cached(gt_path, 'HR')
             gt = np.array(gt.astype('float32')).reshape(-1)
             gt = np.nanmean(gt[Step_Index:Step_Index + self.frames_num])
             gt = gt.astype('float32')'''
@@ -185,7 +196,7 @@ class Data_DG(Dataset):
 
             sp_name = 'Label/SPO2.mat'
             sp_path = os.path.join(nowPath, sp_name)
-            sp = scio.loadmat(sp_path)['SPO2']
+            sp = loadmat_cached(sp_path, 'SPO2')
             sp = np.array(sp.astype('float32')).reshape(-1)
             sp = np.nanmean(sp[Step_Index:Step_Index + self.frames_num])
             sp = sp.astype('float32')
@@ -194,7 +205,7 @@ class Data_DG(Dataset):
         elif self.dataName == 'UBFC':
             bvp_name = 'Label/BVP.mat'
             bvp_path = os.path.join(nowPath, bvp_name)
-            bvp = scio.loadmat(bvp_path)['BVP']
+            bvp = loadmat_cached(bvp_path, 'BVP')
             bvp = np.array(bvp.astype('float32')).reshape(-1)
             bvp = bvp[Step_Index:Step_Index + self.frames_num]
             bvp = (bvp - np.min(bvp)) / (np.max(bvp) - np.min(bvp))
@@ -202,7 +213,7 @@ class Data_DG(Dataset):
 
             gt_name = 'Label/HR.mat'
             gt_path = os.path.join(nowPath, gt_name)
-            gt = scio.loadmat(gt_path)['HR']
+            gt = loadmat_cached(gt_path, 'HR')
             gt = np.array(gt.astype('float32')).reshape(-1)
             gt = np.nanmean(gt[Step_Index:Step_Index + self.frames_num])
             gt = gt.astype('float32')
@@ -213,11 +224,7 @@ class Data_DG(Dataset):
         idx = idx + self.jump
         img_name = 'STMap'
         STMap_name = self.STMap_Name
-        nowPath = os.path.join(self.root_dir, self.datalist[idx])
-        temp = scio.loadmat(nowPath)
-        nowPath = str(temp['Path'][0])
-        # nowPath = nowPath.replace('/home/haolu', '/remote-home/hao.lu')
-        Step_Index = int(temp['Step_Index'])
+        nowPath, Step_Index = self.index_cache[idx]
         # get HR value and bvp signal
         if self.dataName in ['PURE', 'VIPL']:
             gt, bvp, sp = self.getLabel(nowPath, Step_Index)
@@ -281,15 +288,15 @@ class Data_DG(Dataset):
             gt_aug, bvp_aug = self.getLabel(nowPath, Step_Index_aug)
         # gt_aug, bvp_aug = self.getLabel(nowPath, Step_Index_aug)
 
-        for c in range(map_ori.shape[2]):
-            for r in range(map_ori.shape[0]):
-                map_ori[r, :, c] = 255 * ((map_ori[r, :, c] - np.min(map_ori[r, :, c])) / \
-                                          (0.00001 + np.max(map_ori[r, :, c]) - np.min(map_ori[r, :, c])))
+        # Vectorized per-row normalization for both original and augmented maps
+        eps = 1e-5
+        min_vals = np.min(map_ori, axis=1, keepdims=True)
+        max_vals = np.max(map_ori, axis=1, keepdims=True)
+        map_ori = 255 * (map_ori - min_vals) / (eps + (max_vals - min_vals))
 
-        for c in range(map_aug.shape[2]):
-            for r in range(map_aug.shape[0]):
-                map_aug[r, :, c] = 255 * ((map_aug[r, :, c] - np.min(map_aug[r, :, c])) / \
-                                          (0.00001 + np.max(map_aug[r, :, c]) - np.min(map_aug[r, :, c])))
+        min_vals_aug = np.min(map_aug, axis=1, keepdims=True)
+        max_vals_aug = np.max(map_aug, axis=1, keepdims=True)
+        map_aug = 255 * (map_aug - min_vals_aug) / (eps + (max_vals_aug - min_vals_aug))
         # if self.domain_label is not None:
         # domain_label = np.full((map_ori.shape[0], 1), np.inf)
 
@@ -319,6 +326,12 @@ class Data_DG_Intra(Dataset):
         self.domain_label = domain_label
         self.transform = transform
         self.args = args
+
+        # Cache index metadata to avoid per-item .mat file I/O during training
+        self.index_cache = []
+        for f in self.datalist:
+            temp = scio.loadmat(os.path.join(self.root_dir, f))
+            self.index_cache.append((str(temp['Path'][0]), int(temp['Step_Index'])))
 
         self.transform = transforms.Compose([transforms.Resize(size=(64, 256)),
                                              transforms.ToTensor(),
@@ -500,11 +513,7 @@ class Data_DG_Intra(Dataset):
     def __getitem__(self, idx):
         img_name = 'STMap'
         STMap_name = self.STMap_Name
-        nowPath = os.path.join(self.root_dir, self.datalist[idx])
-        temp = scio.loadmat(nowPath)
-        nowPath = str(temp['Path'][0])
-        # nowPath = nowPath.replace('/home/haolu', '/remote-home/hao.lu')
-        Step_Index = int(temp['Step_Index'])
+        nowPath, Step_Index = self.index_cache[idx]
         # get HR value and bvp signal
         if self.dataName in ['PURE', 'VIPL']:
             gt, bvp, sp = self.getLabel(nowPath, Step_Index)
@@ -568,15 +577,15 @@ class Data_DG_Intra(Dataset):
             gt_aug, bvp_aug = self.getLabel(nowPath, Step_Index_aug)
         # gt_aug, bvp_aug = self.getLabel(nowPath, Step_Index_aug)
 
-        for c in range(map_ori.shape[2]):
-            for r in range(map_ori.shape[0]):
-                map_ori[r, :, c] = 255 * ((map_ori[r, :, c] - np.min(map_ori[r, :, c])) / \
-                                          (0.00001 + np.max(map_ori[r, :, c]) - np.min(map_ori[r, :, c])))
+        # Vectorized per-row normalization for both original and augmented maps
+        eps = 1e-5
+        min_vals = np.min(map_ori, axis=1, keepdims=True)
+        max_vals = np.max(map_ori, axis=1, keepdims=True)
+        map_ori = 255 * (map_ori - min_vals) / (eps + (max_vals - min_vals))
 
-        for c in range(map_aug.shape[2]):
-            for r in range(map_aug.shape[0]):
-                map_aug[r, :, c] = 255 * ((map_aug[r, :, c] - np.min(map_aug[r, :, c])) / \
-                                          (0.00001 + np.max(map_aug[r, :, c]) - np.min(map_aug[r, :, c])))
+        min_vals_aug = np.min(map_aug, axis=1, keepdims=True)
+        max_vals_aug = np.max(map_aug, axis=1, keepdims=True)
+        map_aug = 255 * (map_aug - min_vals_aug) / (eps + (max_vals_aug - min_vals_aug))
         # if self.domain_label is not None:
         # domain_label = np.full((map_ori.shape[0], 1), np.inf)
 
