@@ -43,8 +43,15 @@ if __name__ == '__main__':
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = False
+    torch.backends.cudnn.benchmark = True
+    if torch.cuda.is_available():
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
+        try:
+            torch.set_float32_matmul_precision('high')
+        except Exception:
+            pass
     Source_domain_Names = TARGET_DOMAIN[args.tgt]
     root_file = r'/remote-home/hao.lu/Data/STMap/'
     # 参数
@@ -161,12 +168,15 @@ if __name__ == '__main__':
     Target_db = MyDataset.Data_DG(root_dir=Target_saveRoot, dataName=Target_name, \
                                   STMap=Target_map, frames_num=frames_num, args=args, domain_label=5)
 
-    src_loader_0 = DataLoader(source_db_0, batch_size=batch_size_num, shuffle=True, num_workers=num_workers)
-    src_loader_1 = DataLoader(source_db_1, batch_size=batch_size_num, shuffle=True, num_workers=num_workers)
-    src_loader_2 = DataLoader(source_db_2, batch_size=batch_size_num, shuffle=True, num_workers=num_workers)
-    src_loader_3 = DataLoader(source_db_3, batch_size=batch_size_num, shuffle=True, num_workers=num_workers)
-    src_loader_4 = DataLoader(source_db_4, batch_size=batch_size_num, shuffle=True, num_workers=num_workers)
-    tgt_loader = DataLoader(Target_db, batch_size=batch_size_num, shuffle=False, num_workers=num_workers)
+    common_loader_kwargs = {"num_workers": num_workers, "pin_memory": True, "persistent_workers": num_workers > 0}
+    if num_workers > 0:
+        common_loader_kwargs["prefetch_factor"] = 2
+    src_loader_0 = DataLoader(source_db_0, batch_size=batch_size_num, shuffle=True, **common_loader_kwargs)
+    src_loader_1 = DataLoader(source_db_1, batch_size=batch_size_num, shuffle=True, **common_loader_kwargs)
+    src_loader_2 = DataLoader(source_db_2, batch_size=batch_size_num, shuffle=True, **common_loader_kwargs)
+    src_loader_3 = DataLoader(source_db_3, batch_size=batch_size_num, shuffle=True, **common_loader_kwargs)
+    src_loader_4 = DataLoader(source_db_4, batch_size=batch_size_num, shuffle=True, **common_loader_kwargs)
+    tgt_loader = DataLoader(Target_db, batch_size=batch_size_num, shuffle=False, **common_loader_kwargs)
 
     if 'resnet' in args.pt:
         my_model = model.BaseNet_CNN(pretrain=args.pt, gamma=args.r, lora_alpha=args.alpha)
@@ -239,66 +249,66 @@ if __name__ == '__main__':
             data3, bvp3, HR_rel3, spo_rel3, rf_rel3, data_aug3, bvp_aug3, HR_rel_aug3, spo_rel_aug3, rf_rel_aug3, domain_label3 = src_iter_3.__next__()
             data4, bvp4, HR_rel4, spo_rel4, rf_rel4, data_aug4, bvp_aug4, HR_rel_aug4, spo_rel_aug4, rf_rel_aug4, domain_label4 = src_iter_4.__next__()
 
-            data0 = Variable(data0).float().to(device=device)
-            bvp0 = Variable(bvp0).float().to(device=device).unsqueeze(dim=1)
+            data0 = Variable(data0).float().to(device=device, non_blocking=True)
+            bvp0 = Variable(bvp0).float().to(device=device, non_blocking=True).unsqueeze(dim=1)
             HR_rel0 = Variable(torch.Tensor(HR_rel0)).float().to(device=device)
             spo_rel0 = Variable(torch.Tensor(spo_rel0)).float().to(device=device)
             rf_rel0 = Variable(torch.Tensor(rf_rel0)).float().to(device=device)
 
-            data_aug0 = Variable(data_aug0).float().to(device=device)
-            bvp_aug0 = Variable(bvp_aug0).float().to(device=device).unsqueeze(dim=1)
+            data_aug0 = Variable(data_aug0).float().to(device=device, non_blocking=True)
+            bvp_aug0 = Variable(bvp_aug0).float().to(device=device, non_blocking=True).unsqueeze(dim=1)
             HR_rel_aug0 = Variable(torch.Tensor(HR_rel_aug0)).float().to(device=device)
             spo_rel_aug0 = Variable(torch.Tensor(spo_rel_aug0)).float().to(device=device)
             rf_rel_aug0 = Variable(torch.Tensor(rf_rel_aug0)).float().to(device=device)
             # domain_label0 = domain_label0.long().to(device)
 
-            data1 = Variable(data1).float().to(device=device)
-            bvp1 = Variable((bvp1)).float().to(device=device).unsqueeze(dim=1)
+            data1 = Variable(data1).float().to(device=device, non_blocking=True)
+            bvp1 = Variable((bvp1)).float().to(device=device, non_blocking=True).unsqueeze(dim=1)
             HR_rel1 = Variable(torch.Tensor(HR_rel1)).float().to(device=device)
             spo_rel1 = Variable(torch.Tensor(spo_rel1)).float().to(device=device)
             rf_rel1 = Variable(torch.Tensor(rf_rel1)).float().to(device=device)
 
-            data_aug1 = Variable(data_aug1).float().to(device=device)
-            bvp_aug1 = Variable((bvp_aug1)).float().to(device=device).unsqueeze(dim=1)
+            data_aug1 = Variable(data_aug1).float().to(device=device, non_blocking=True)
+            bvp_aug1 = Variable((bvp_aug1)).float().to(device=device, non_blocking=True).unsqueeze(dim=1)
             HR_rel_aug1 = Variable(torch.Tensor(HR_rel_aug1)).float().to(device=device)
             spo_rel_aug1 = Variable(torch.Tensor(spo_rel_aug1)).float().to(device=device)
             rf_rel_aug1 = Variable(torch.Tensor(rf_rel_aug1)).float().to(device=device)
             # domain_label1 = domain_label1.long().to(device)
 
-            data2 = Variable(data2).float().to(device=device)
-            bvp2 = Variable((bvp2)).float().to(device=device).unsqueeze(dim=1)
+            data2 = Variable(data2).float().to(device=device, non_blocking=True)
+            bvp2 = Variable((bvp2)).float().to(device=device, non_blocking=True).unsqueeze(dim=1)
             HR_rel2 = Variable(torch.Tensor(HR_rel2)).float().to(device=device)
             spo_rel2 = Variable(torch.Tensor(spo_rel2)).float().to(device=device)
             rf_rel2 = Variable(torch.Tensor(rf_rel2)).float().to(device=device)
 
-            data_aug2 = Variable(data_aug2).float().to(device=device)
-            bvp_aug2 = Variable((bvp_aug2)).float().to(device=device).unsqueeze(dim=1)
+            data_aug2 = Variable(data_aug2).float().to(device=device, non_blocking=True)
+            bvp_aug2 = Variable((bvp_aug2)).float().to(device=device, non_blocking=True).unsqueeze(dim=1)
             HR_rel_aug2 = Variable(torch.Tensor(HR_rel_aug2)).float().to(device=device)
             spo_rel_aug2 = Variable(torch.Tensor(spo_rel_aug2)).float().to(device=device)
             rf_rel_aug2 = Variable(torch.Tensor(rf_rel_aug2)).float().to(device=device)
             # domain_label2 = domain_label2.long().to(device)
 
-            data3 = Variable(data3).float().to(device=device)
-            bvp3 = Variable((bvp3)).float().to(device=device).unsqueeze(dim=1)
+            data3 = Variable(data3).float().to(device=device, non_blocking=True)
+            bvp3 = Variable((bvp3)).float().to(device=device, non_blocking=True).unsqueeze(dim=1)
             HR_rel3 = Variable(torch.Tensor(HR_rel3)).float().to(device=device)
             spo_rel3 = Variable(torch.Tensor(spo_rel3)).float().to(device=device)
             rf_rel3 = Variable(torch.Tensor(rf_rel3)).float().to(device=device)
 
-            data_aug3 = Variable(data_aug3).float().to(device=device)
-            bvp_aug3 = Variable((bvp_aug3)).float().to(device=device).unsqueeze(dim=1)
+            data_aug3 = Variable(data_aug3).float().to(device=device, non_blocking=True)
+            bvp_aug3 = Variable((bvp_aug3)).float().to(device=device, non_blocking=True).unsqueeze(dim=1)
             HR_rel_aug3 = Variable(torch.Tensor(HR_rel_aug3)).float().to(device=device)
             spo_rel_aug3 = Variable(torch.Tensor(spo_rel_aug3)).float().to(device=device)
             rf_rel_aug3 = Variable(torch.Tensor(rf_rel_aug3)).float().to(device=device)
             # domain_label3 = domain_label3.long().to(device)
 
-            data4 = Variable(data4).float().to(device=device)
-            bvp4 = Variable((bvp4)).float().to(device=device).unsqueeze(dim=1)
+            data4 = Variable(data4).float().to(device=device, non_blocking=True)
+            bvp4 = Variable((bvp4)).float().to(device=device, non_blocking=True).unsqueeze(dim=1)
             HR_rel4 = Variable(torch.Tensor(HR_rel4)).float().to(device=device)
             spo_rel4 = Variable(torch.Tensor(spo_rel4)).float().to(device=device)
             rf_rel4 = Variable(torch.Tensor(rf_rel4)).float().to(device=device)
 
-            data_aug4 = Variable(data_aug4).float().to(device=device)
-            bvp_aug4 = Variable((bvp_aug4)).float().to(device=device).unsqueeze(dim=1)
+            data_aug4 = Variable(data_aug4).float().to(device=device, non_blocking=True)
+            bvp_aug4 = Variable((bvp_aug4)).float().to(device=device, non_blocking=True).unsqueeze(dim=1)
             HR_rel_aug4 = Variable(torch.Tensor(HR_rel_aug4)).float().to(device=device)
             spo_rel_aug4 = Variable(torch.Tensor(spo_rel_aug4)).float().to(device=device)
             rf_rel_aug4 = Variable(torch.Tensor(rf_rel_aug4)).float().to(device=device)
@@ -517,16 +527,17 @@ if __name__ == '__main__':
                 Spo_rel_temp = []
                 RF_pr_temp = []
                 RF_rel_temp = []
-                for step, (data, bvp, HR_rel, spo, rf, _, _, _, _, _, _) in tqdm(enumerate(tgt_loader)):
-                    data = Variable(data).float().to(device=device)
-                    bvp = Variable(bvp).float().to(device=device)
-                    HR_rel = Variable(HR_rel).float().to(device=device)
-                    Spo_rel = Variable(spo).float().to(device=device)
-                    RF_rel = Variable(rf).float().to(device=device)
-                    bvp = bvp.unsqueeze(dim=1)
-                    Wave = bvp
-                    rand_idx = torch.randperm(data.shape[0])
-                    Wave_pr, HR_pr, Spo_pr, RF_pr, _, _ = my_model(data)
+                with torch.no_grad():
+                    for step, (data, bvp, HR_rel, spo, rf, _, _, _, _, _, _) in tqdm(enumerate(tgt_loader)):
+                        data = Variable(data).float().to(device=device, non_blocking=True)
+                        bvp = Variable(bvp).float().to(device=device, non_blocking=True)
+                        HR_rel = Variable(HR_rel).float().to(device=device, non_blocking=True)
+                        Spo_rel = Variable(spo).float().to(device=device, non_blocking=True)
+                        RF_rel = Variable(rf).float().to(device=device, non_blocking=True)
+                        bvp = bvp.unsqueeze(dim=1)
+                        Wave = bvp
+                        rand_idx = torch.randperm(data.shape[0], device=device)
+                        Wave_pr, HR_pr, Spo_pr, RF_pr, _, _ = my_model(data)
 
                     if Target_name in ['VIPL', 'PURE']:
                         HR_pr_temp.extend(HR_pr.data.cpu().numpy())

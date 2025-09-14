@@ -10,7 +10,6 @@ from MoE.Lora import *
 
 np.set_printoptions(threshold=np.inf)
 sys.path.append('..')
-args = utils.get_args()
 
 
 class BasicBlock(nn.Module):
